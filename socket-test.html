@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SUGAM Socket Test</title>
+</head>
+<body>
+  <h1>SUGAM Socket.io Test</h1>
+
+  <button onclick="joinBus()">Join Bus 1</button>
+  <button onclick="sendLocation()">Send Location</button>
+
+  <pre id="output"></pre>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://localhost:3000");
+    const output = document.getElementById("output");
+
+    socket.on("connect", () => {
+      output.innerText += "Connected: " + socket.id + "\n";
+    });
+
+    socket.on("location-update", (data) => {
+      output.innerText += "Location update received: " + JSON.stringify(data, null, 2) + "\n";
+    });
+
+    function joinBus() {
+      socket.emit("join-bus-room", 1);
+      output.innerText += "Joined Bus 1 room\n";
+    }
+
+    function sendLocation() {
+      socket.emit("send-location", {
+        busId: 1,
+        lat: 28.7041,
+        lng: 77.1025
+      });
+
+      output.innerText += "Sent location\n";
+    }
+  </script>
+</body>
+</html>
