@@ -47,4 +47,40 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+router.put("/:id/location", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { lat, lng } = req.body;
+
+    const result = await pool.query(
+      `UPDATE buses
+       SET current_lat = $1,
+           current_lng = $2,
+           last_updated = CURRENT_TIMESTAMP
+       WHERE id = $3 AND is_active = true
+       RETURNING *`,
+      [lat, lng, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Bus not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Bus location updated",
+      bus: result.rows[0]
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+});
+
 module.exports = router;
