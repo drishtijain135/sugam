@@ -3,6 +3,7 @@ const busRoutes = require("./routes/buses");
 const auth = require("./middleware/auth");
 const pool = require("./config/db");
 const predictRoutes = require("./routes/predict");
+const transportRoutes = require("./routes/transportRoutes");
 
 const express = require("express");
 const cors = require("cors");
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/buses", busRoutes);
 app.use("/api/predict", predictRoutes);
+app.use("/api/routes", transportRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({
