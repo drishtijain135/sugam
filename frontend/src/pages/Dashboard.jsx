@@ -8,6 +8,7 @@ import useSocket from "../hooks/useSocket";
 import LiveBusCard from "../components/LiveBusCard";
 import BusDetails from "../components/BusDetails";
 import BusCardSkeleton from "../components/BusCardSkeleton";
+import toast from "react-hot-toast";
 
 import {
   getBuses,
@@ -45,6 +46,7 @@ function Dashboard() {
     } catch (error) {
       console.error("Unable to fetch buses:", error);
       setBusError("Unable to load live buses.");
+      toast.error("Unable to load live buses.");
     } finally {
       setLoadingBuses(false);
     }
@@ -73,12 +75,22 @@ function Dashboard() {
     try {
       setSearchingRoutes(true);
       setRouteError("");
-      
+
       const response = await searchRoutes(source, destination);
 
-      setRoutes(response.data.routes);
+      const foundRoutes = response.data.routes || [];
+
+      setRoutes(foundRoutes);
       setSelectedRoute(null);
       setPredictions({});
+
+      if (foundRoutes.length > 0) {
+        toast.success(
+          `${foundRoutes.length} route${foundRoutes.length > 1 ? "s" : ""} found`
+        );
+      } else {
+        toast("No routes found for this journey.");
+      }
     } catch (error) {
       console.error("Route search failed:", error);
 
@@ -86,6 +98,8 @@ function Dashboard() {
       setRoutes([]);
       setSelectedRoute(null);
       setPredictions({});
+
+      toast.error("Route search failed. Please try again.");
     } finally {
       setSearchingRoutes(false);
     }
@@ -287,6 +301,7 @@ function Dashboard() {
           onViewMap={() => {
             setFocusedBus(selectedBus);
             setSelectedBus(null);
+            toast.success("Bus location focused on the map.");
           }}
         />
       )}
