@@ -25,6 +25,7 @@ function Dashboard() {
   const [loadingRouteId, setLoadingRouteId] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null)
   const [selectedBus, setSelectedBus] = useState(null);
+  const [focusedBus, setFocusedBus] = useState(null);
 
   useEffect(() => {
     const fetchBuses = async () => {
@@ -182,6 +183,7 @@ function Dashboard() {
             <BusMap
               buses={buses}
               selectedRoute={selectedRoute}
+              focusedBus={focusedBus}
             />
           </section>
 
@@ -247,6 +249,10 @@ function Dashboard() {
         <BusDetails
           bus={selectedBus}
           onClose={() => setSelectedBus(null)}
+          onViewMap={() => {
+            setFocusedBus(selectedBus);
+            setSelectedBus(null);
+          }}
         />
       )}
     </div>

@@ -6,6 +6,7 @@ import {
   Polyline,
   Popup,
   TileLayer,
+  useMap,
 } from "react-leaflet";
 
 import L from "leaflet";
@@ -131,7 +132,26 @@ function AnimatedBusMarker({ bus }) {
   );
 }
 
-function BusMap({ buses, selectedRoute }) {
+function MapFocusController({ focusedBus }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!focusedBus) return;
+
+    const lat = Number(focusedBus.current_lat);
+    const lng = Number(focusedBus.current_lng);
+
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+
+    map.flyTo([lat, lng], 16, {
+      duration: 1.2,
+    });
+  }, [focusedBus, map]);
+
+  return null;
+}
+
+function BusMap({ buses, selectedRoute, focusedBus }) {
   const routeCoordinates = {
     1: [
       [28.6677, 77.2303],
@@ -167,6 +187,8 @@ function BusMap({ buses, selectedRoute }) {
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+
+      <MapFocusController focusedBus={focusedBus} />
 
       {buses.map((bus) => {
         const latitude = Number(bus.current_lat);

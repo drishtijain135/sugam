@@ -1,4 +1,4 @@
-function BusDetails({ bus, onClose }) {
+function BusDetails({ bus, onClose, onViewMap }) {
   if (!bus) return null;
 
   const latitude = Number(bus.current_lat);
@@ -136,6 +136,7 @@ function BusDetails({ bus, onClose }) {
 
         <button
           type="button"
+          onClick={onViewMap}
           className="mt-6 w-full rounded-2xl bg-emerald-400 px-4 py-3 font-bold text-slate-950 transition hover:bg-emerald-300"
         >
           View on map
