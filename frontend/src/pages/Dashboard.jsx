@@ -7,6 +7,7 @@ import StatCard from "../components/StatCard";
 import useSocket from "../hooks/useSocket";
 import LiveBusCard from "../components/LiveBusCard";
 import BusDetails from "../components/BusDetails";
+import BusCardSkeleton from "../components/BusCardSkeleton";
 
 import {
   getBuses,
@@ -38,7 +39,7 @@ function Dashboard() {
     try {
       setLoadingBuses(true);
       setBusError("");
-
+      
       const response = await getBuses();
       setBuses(response.data.buses);
     } catch (error) {
@@ -176,33 +177,29 @@ function Dashboard() {
               </span>
             </div>
 
-            {buses.length === 0 ? (
+            {loadingBuses ? (
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {[1, 2, 3].map((item) => (
+                  <BusCardSkeleton key={item} />
+                ))}
+              </div>
+            ) : busError ? (
+              <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-400">
+                {busError}
+              </div>
+            ) : buses.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950 p-5 text-sm text-slate-500">
                 No live buses are currently available.
               </div>
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-2">
-                {loadingBuses ? (
-                  <p className="text-center text-gray-500 py-4">
-                    Loading live buses...
-                  </p>
-                ) : busError ? (
-                  <p className="text-center text-red-500 py-4">
-                    {busError}
-                  </p>
-                ) : buses.length === 0 ? (
-                  <p className="text-center text-gray-500 py-4">
-                    No live buses available.
-                  </p>
-                ) : (
-                  buses.map((bus) => (
-                    <LiveBusCard
-                      key={bus.id}
-                      bus={bus}
-                      onClick={() => setSelectedBus(bus)}
-                    />
-                  ))
-                )}
+                {buses.map((bus) => (
+                  <LiveBusCard
+                    key={bus.id}
+                    bus={bus}
+                    onClick={() => setSelectedBus(bus)}
+                  />
+                ))}
               </div>
             )}
           </section>
