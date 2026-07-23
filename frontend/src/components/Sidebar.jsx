@@ -7,6 +7,8 @@ function Sidebar({
   destination,
   setDestination,
   onSearch,
+  searchingRoutes,
+  routeError,
   routes,
   onPredictSeat,
   predictions,
@@ -32,6 +34,7 @@ function Sidebar({
         destination={destination}
         setDestination={setDestination}
         onSearch={onSearch}
+        searchingRoutes={searchingRoutes}
       />
 
       <div className="mt-5">
@@ -39,7 +42,15 @@ function Sidebar({
           Route Options
         </h2>
 
-        {routes.length === 0 ? (
+        {searchingRoutes ? (
+          <p className="py-4 text-sm text-slate-400">
+            Searching routes...
+          </p>
+        ) : routeError ? (
+          <p className="py-4 text-sm text-red-400">
+            {routeError}
+          </p>
+        ) : routes.length === 0 ? (
           <p className="text-sm text-slate-500">
             Search IGDTUW to Rajouri Garden to view route options.
           </p>

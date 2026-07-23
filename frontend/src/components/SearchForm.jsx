@@ -4,6 +4,7 @@ function SearchForm({
   destination,
   setDestination,
   onSearch,
+  searchingRoutes,
 }) {
   const swapLocations = () => {
     const oldSource = source;
@@ -14,7 +15,11 @@ function SearchForm({
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!source.trim() || !destination.trim()) {
+    if (
+      !source.trim() ||
+      !destination.trim() ||
+      searchingRoutes
+    ) {
       return;
     }
 
@@ -87,10 +92,14 @@ function SearchForm({
 
       <button
         type="submit"
-        disabled={!source.trim() || !destination.trim()}
+        disabled={
+          !source.trim() ||
+          !destination.trim() ||
+          searchingRoutes
+        }
         className="mt-5 w-full rounded-2xl bg-emerald-400 py-4 font-bold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Search best routes
+        {searchingRoutes ? "Searching routes..." : "Search best routes"}
       </button>
 
       <p className="mt-3 text-center text-xs text-slate-500">

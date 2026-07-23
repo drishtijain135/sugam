@@ -30,6 +30,9 @@ function Dashboard() {
   const [selectedBus, setSelectedBus] = useState(null);
   const [focusedBus, setFocusedBus] = useState(null);
 
+  const [searchingRoutes, setSearchingRoutes] = useState(false);
+  const [routeError, setRouteError] = useState("");
+
   useEffect(() => {
   const fetchBuses = async () => {
     try {
@@ -67,6 +70,9 @@ function Dashboard() {
 
   const handleSearch = async () => {
     try {
+      setSearchingRoutes(true);
+      setRouteError("");
+      
       const response = await searchRoutes(source, destination);
 
       setRoutes(response.data.routes);
@@ -74,6 +80,13 @@ function Dashboard() {
       setPredictions({});
     } catch (error) {
       console.error("Route search failed:", error);
+
+      setRouteError("Unable to search routes. Please try again.");
+      setRoutes([]);
+      setSelectedRoute(null);
+      setPredictions({});
+    } finally {
+      setSearchingRoutes(false);
     }
   };
 
@@ -106,6 +119,8 @@ function Dashboard() {
         destination={destination}
         setDestination={setDestination}
         onSearch={handleSearch}
+        searchingRoutes={searchingRoutes}
+        routeError={routeError}
         routes={routes}
         onPredictSeat={handlePredictSeat}
         predictions={predictions}
