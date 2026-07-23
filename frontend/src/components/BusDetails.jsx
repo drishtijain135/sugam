@@ -1,7 +1,15 @@
+import { useEffect } from "react";
 import { calculateEta } from "../utils/calculateEta";
 function BusDetails({ bus, onClose, onViewMap }) {
-  if (!bus) return null;
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
 
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+  if (!bus) return null;
+  
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
   const eta = calculateEta(
@@ -20,14 +28,14 @@ function BusDetails({ bus, onClose, onViewMap }) {
       />
 
       {/* Right-side drawer */}
-      <aside className="absolute right-0 top-0 h-full w-full max-w-md border-l border-slate-700 bg-slate-950 p-6 shadow-2xl">
+      <aside className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto border-l border-slate-700 bg-slate-950 p-4 shadow-2xl sm:p-6">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-semibold text-emerald-400">
               Live Vehicle
             </p>
 
-            <h2 className="mt-1 text-2xl font-bold text-white">
+            <h2 className="mt-1 text-xl font-bold text-white sm:text-2xl">
               {bus.name || "Bus"}
             </h2>
 
@@ -61,7 +69,7 @@ function BusDetails({ bus, onClose, onViewMap }) {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-2xl bg-slate-900 p-4">
             <p className="text-xs text-slate-500">
               Latitude

@@ -113,7 +113,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col lg:flex-row">
+    <div className="flex min-h-screen flex-col md:h-screen md:flex-row">
       <Sidebar
         source={source}
         setSource={setSource}

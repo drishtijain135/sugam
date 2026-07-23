@@ -17,7 +17,7 @@ function Sidebar({
   setSelectedRoute,
 }) {
   return (
-    <aside className="w-full overflow-y-auto border-r border-slate-800 bg-slate-950 p-5 lg:w-[400px]">
+    <aside className="h-screen w-full overflow-y-auto bg-slate-950 p-4 md:w-[420px] md:p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">
           🚍 SUGAM
