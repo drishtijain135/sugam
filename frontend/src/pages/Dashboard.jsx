@@ -16,6 +16,9 @@ import {
 
 function Dashboard() {
   const [buses, setBuses] = useState([]);
+  const [loadingBuses, setLoadingBuses] = useState(true);
+  const [busError, setBusError] = useState("");
+
   const [routes, setRoutes] = useState([]);
 
   const [source, setSource] = useState("IGDTUW");
@@ -28,17 +31,23 @@ function Dashboard() {
   const [focusedBus, setFocusedBus] = useState(null);
 
   useEffect(() => {
-    const fetchBuses = async () => {
-      try {
-        const response = await getBuses();
-        setBuses(response.data.buses);
-      } catch (error) {
-        console.error("Unable to fetch buses:", error);
-      }
-    };
+  const fetchBuses = async () => {
+    try {
+      setLoadingBuses(true);
+      setBusError("");
 
-    fetchBuses();
-  }, []);
+      const response = await getBuses();
+      setBuses(response.data.buses);
+    } catch (error) {
+      console.error("Unable to fetch buses:", error);
+      setBusError("Unable to load live buses.");
+    } finally {
+      setLoadingBuses(false);
+    }
+  };
+
+  fetchBuses();
+}, []);
 
   const handleLocationUpdate = useCallback((data) => {
     setBuses((previousBuses) =>
@@ -158,13 +167,27 @@ function Dashboard() {
               </div>
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-2">
-                {buses.map((bus) => (
-                  <LiveBusCard
-                    key={bus.id}
-                    bus={bus}
-                    onClick={() => setSelectedBus(bus)}
-                  />
-                ))}
+                {loadingBuses ? (
+                  <p className="text-center text-gray-500 py-4">
+                    Loading live buses...
+                  </p>
+                ) : busError ? (
+                  <p className="text-center text-red-500 py-4">
+                    {busError}
+                  </p>
+                ) : buses.length === 0 ? (
+                  <p className="text-center text-gray-500 py-4">
+                    No live buses available.
+                  </p>
+                ) : (
+                  buses.map((bus) => (
+                    <LiveBusCard
+                      key={bus.id}
+                      bus={bus}
+                      onClick={() => setSelectedBus(bus)}
+                    />
+                  ))
+                )}
               </div>
             )}
           </section>
