@@ -1,6 +1,13 @@
+import { calculateEta } from "../utils/calculateEta";
 function LiveBusCard({ bus, onClick }) {
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
+  const eta = calculateEta(
+    bus.current_lat,
+    bus.current_lng,
+    28.6677,
+    77.2303
+  );
 
   return (
     <button
@@ -56,12 +63,18 @@ function LiveBusCard({ bus, onClick }) {
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-slate-500">
-        Last updated:{" "}
-        {bus.last_updated
-          ? new Date(bus.last_updated).toLocaleTimeString()
-          : "Live tracking active"}
-      </p>
+      <div className="mt-3 flex items-center justify-between text-xs">
+        <span className="text-slate-500">
+          Last updated:{" "}
+          {bus.last_updated
+            ? new Date(bus.last_updated).toLocaleTimeString()
+            : "Live tracking active"}
+        </span>
+
+        <span className="font-semibold text-emerald-400">
+          ETA: {eta ? `${eta} min` : "Unavailable"}
+        </span>
+      </div>
     </button>
   );
 }

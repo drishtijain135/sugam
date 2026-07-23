@@ -1,8 +1,15 @@
+import { calculateEta } from "../utils/calculateEta";
 function BusDetails({ bus, onClose, onViewMap }) {
   if (!bus) return null;
 
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
+  const eta = calculateEta(
+    bus.current_lat,
+    bus.current_lng,
+    28.6677,
+    77.2303
+  );
 
   return (
     <div className="fixed inset-0 z-[9999]">
@@ -129,7 +136,7 @@ function BusDetails({ bus, onClose, onViewMap }) {
             </p>
 
             <p className="mt-1 font-semibold text-white">
-              6 minutes
+              {eta ? `${eta} minutes` : "Unavailable"}
             </p>
           </div>
         </div>
