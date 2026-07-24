@@ -28,7 +28,7 @@ function Dashboard() {
 
   const [predictions, setPredictions] = useState({});
   const [loadingRouteId, setLoadingRouteId] = useState(null);
-  const [selectedRoute, setSelectedRoute] = useState(null)
+  const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedBus, setSelectedBus] = useState(null);
   const [focusedBus, setFocusedBus] = useState(null);
 
@@ -36,24 +36,24 @@ function Dashboard() {
   const [routeError, setRouteError] = useState("");
 
   useEffect(() => {
-  const fetchBuses = async () => {
-    try {
-      setLoadingBuses(true);
-      setBusError("");
-      
-      const response = await getBuses();
-      setBuses(response.data.buses);
-    } catch (error) {
-      console.error("Unable to fetch buses:", error);
-      setBusError("Unable to load live buses.");
-      toast.error("Unable to load live buses.");
-    } finally {
-      setLoadingBuses(false);
-    }
-  };
+    const fetchBuses = async () => {
+      try {
+        setLoadingBuses(true);
+        setBusError("");
 
-  fetchBuses();
-}, []);
+        const response = await getBuses();
+        setBuses(response.data.buses);
+      } catch (error) {
+        console.error("Unable to fetch buses:", error);
+        setBusError("Unable to load live buses.");
+        toast.error("Unable to load live buses.");
+      } finally {
+        setLoadingBuses(false);
+      }
+    };
+
+    fetchBuses();
+  }, []);
 
   const handleLocationUpdate = useCallback((data) => {
     setBuses((previousBuses) =>
@@ -77,7 +77,6 @@ function Dashboard() {
       setRouteError("");
 
       const response = await searchRoutes(source, destination);
-
       const foundRoutes = response.data.routes || [];
 
       setRoutes(foundRoutes);
@@ -86,7 +85,9 @@ function Dashboard() {
 
       if (foundRoutes.length > 0) {
         toast.success(
-          `${foundRoutes.length} route${foundRoutes.length > 1 ? "s" : ""} found`
+          `${foundRoutes.length} route${
+            foundRoutes.length > 1 ? "s" : ""
+          } found`
         );
       } else {
         toast("No routes found for this journey.");
@@ -121,177 +122,193 @@ function Dashboard() {
       }));
     } catch (error) {
       console.error("Seat prediction failed:", error);
+      toast.error("Seat prediction failed.");
     } finally {
       setLoadingRouteId(null);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col md:h-screen md:flex-row">
-      <Sidebar
-        source={source}
-        setSource={setSource}
-        destination={destination}
-        setDestination={setDestination}
-        onSearch={handleSearch}
-        searchingRoutes={searchingRoutes}
-        routeError={routeError}
-        routes={routes}
-        onPredictSeat={handlePredictSeat}
-        predictions={predictions}
-        loadingRouteId={loadingRouteId}
-        selectedRoute={selectedRoute}
-        setSelectedRoute={setSelectedRoute}
+    <div className="sugam-grid-background relative min-h-screen overflow-x-hidden">
+      {/* Decorative emerald glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed -left-32 -top-32 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl"
       />
 
-      <div className="flex-1">
-        <Header />
+      {/* Decorative blue glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed -bottom-40 -right-32 h-[30rem] w-[30rem] rounded-full bg-blue-500/15 blur-3xl"
+      />
 
-        <main className="p-5">
-          <section className="mb-5 grid grid-cols-2 gap-4 xl:grid-cols-4">
-            <StatCard
-              label="Active Buses"
-              value={buses.length}
-              detail="Live on network"
-            />
+      {/* Existing responsive dashboard layout */}
+      <div className="relative z-10 flex min-h-screen flex-col md:flex-row">
+        <Sidebar
+          source={source}
+          setSource={setSource}
+          destination={destination}
+          setDestination={setDestination}
+          onSearch={handleSearch}
+          searchingRoutes={searchingRoutes}
+          routeError={routeError}
+          routes={routes}
+          onPredictSeat={handlePredictSeat}
+          predictions={predictions}
+          loadingRouteId={loadingRouteId}
+          selectedRoute={selectedRoute}
+          setSelectedRoute={setSelectedRoute}
+        />
 
-            <StatCard
-              label="Available Routes"
-              value={routes.length || 3}
-              detail="Bus, metro and auto"
-            />
+        <div className="min-w-0 flex-1">
+          <Header />
 
-            <StatCard
-              label="Average Delay"
-              value="4 min"
-              detail="Within normal range"
-            />
+          <main className="p-4 sm:p-5">
+            <section className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard
+                label="Active Buses"
+                value={buses.length}
+                detail="Live on network"
+              />
 
-            <StatCard
-              label="Network Status"
-              value="Live"
-              detail="Socket connected"
-            />
-          </section>
+              <StatCard
+                label="Available Routes"
+                value={routes.length || 3}
+                detail="Bus, metro and auto"
+              />
 
-          <section className="mb-5">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-white">
-                  Live Vehicles
-                </h2>
+              <StatCard
+                label="Average Delay"
+                value="4 min"
+                detail="Within normal range"
+              />
 
-                <p className="text-sm text-slate-400">
-                  Real-time locations from the transport network.
-                </p>
-              </div>
+              <StatCard
+                label="Network Status"
+                value="Live"
+                detail="Socket connected"
+              />
+            </section>
 
-              <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-400">
-                {buses.length} active
-              </span>
-            </div>
-
-            {loadingBuses ? (
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {[1, 2, 3].map((item) => (
-                  <BusCardSkeleton key={item} />
-                ))}
-              </div>
-            ) : busError ? (
-              <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-400">
-                {busError}
-              </div>
-            ) : buses.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950 p-5 text-sm text-slate-500">
-                No live buses are currently available.
-              </div>
-            ) : (
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {buses.map((bus) => (
-                  <LiveBusCard
-                    key={bus.id}
-                    bus={bus}
-                    onClick={() => setSelectedBus(bus)}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-
-          <section className="mb-5">
-            <h2 className="text-2xl font-bold">
-              Live Transit Map
-            </h2>
-
-            <p className="text-sm text-slate-400">
-              Track buses and compare multi-modal route options.
-            </p>
-          </section>
-
-          <section className="overflow-hidden rounded-3xl border border-slate-800 shadow-2xl">
-            <BusMap
-              buses={buses}
-              selectedRoute={selectedRoute}
-              focusedBus={focusedBus}
-            />
-          </section>
-
-          {selectedRoute && (
-            <section className="mt-4 rounded-2xl border border-slate-700 bg-slate-800 p-5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
+            <section className="mb-5">
+              <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-emerald-400">
-                    Selected journey
-                  </p>
+                  <h2 className="text-lg font-bold text-white">
+                    Live Vehicles
+                  </h2>
 
-                  <h3 className="mt-1 text-xl font-bold">
-                    {selectedRoute.route_title}
-                  </h3>
-
-                  <p className="mt-1 text-sm text-slate-400">
-                    {selectedRoute.modes}
+                  <p className="text-sm text-slate-400">
+                    Real-time locations from the transport network.
                   </p>
                 </div>
 
-                <span className="rounded-full bg-emerald-400 px-3 py-1 text-sm font-bold text-slate-950">
-                  {selectedRoute.recommendation}
+                <span className="shrink-0 rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-400">
+                  {buses.length} active
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-xl bg-slate-900 p-3">
-                  <p className="text-xs text-slate-500">
-                    Duration
-                  </p>
-
-                  <p className="font-bold">
-                    {selectedRoute.estimated_time} min
-                  </p>
+              {loadingBuses ? (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {[1, 2, 3].map((item) => (
+                    <BusCardSkeleton key={item} />
+                  ))}
                 </div>
-
-                <div className="rounded-xl bg-slate-900 p-3">
-                  <p className="text-xs text-slate-500">
-                    Estimated Fare
-                  </p>
-
-                  <p className="font-bold">
-                    ₹{selectedRoute.estimated_cost}
-                  </p>
+              ) : busError ? (
+                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-400">
+                  {busError}
                 </div>
-
-                <div className="rounded-xl bg-slate-900 p-3">
-                  <p className="text-xs text-slate-500">
-                    Comfort
-                  </p>
-
-                  <p className="font-bold">
-                    {selectedRoute.comfort_score}%
-                  </p>
+              ) : buses.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950/80 p-5 text-sm text-slate-500">
+                  No live buses are currently available.
                 </div>
-              </div>
+              ) : (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {buses.map((bus) => (
+                    <LiveBusCard
+                      key={bus.id}
+                      bus={bus}
+                      onClick={() => setSelectedBus(bus)}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
-          )}
-                </main>
+
+            <section className="mb-5">
+              <h2 className="text-xl font-bold sm:text-2xl">
+                Live Transit Map
+              </h2>
+
+              <p className="text-sm text-slate-400">
+                Track buses and compare multi-modal route options.
+              </p>
+            </section>
+
+            <section className="overflow-hidden rounded-3xl border border-slate-800 shadow-2xl">
+              <BusMap
+                buses={buses}
+                selectedRoute={selectedRoute}
+                focusedBus={focusedBus}
+              />
+            </section>
+
+            {selectedRoute && (
+              <section className="mt-4 rounded-2xl border border-slate-700 bg-slate-800/90 p-4 sm:p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm text-emerald-400">
+                      Selected journey
+                    </p>
+
+                    <h3 className="mt-1 text-xl font-bold">
+                      {selectedRoute.route_title}
+                    </h3>
+
+                    <p className="mt-1 text-sm text-slate-400">
+                      {selectedRoute.modes}
+                    </p>
+                  </div>
+
+                  <span className="rounded-full bg-emerald-400 px-3 py-1 text-sm font-bold text-slate-950">
+                    {selectedRoute.recommendation}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl bg-slate-900 p-3">
+                    <p className="text-xs text-slate-500">
+                      Duration
+                    </p>
+
+                    <p className="font-bold">
+                      {selectedRoute.estimated_time} min
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-900 p-3">
+                    <p className="text-xs text-slate-500">
+                      Estimated Fare
+                    </p>
+
+                    <p className="font-bold">
+                      ₹{selectedRoute.estimated_cost}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-900 p-3">
+                    <p className="text-xs text-slate-500">
+                      Comfort
+                    </p>
+
+                    <p className="font-bold">
+                      {selectedRoute.comfort_score}%
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+          </main>
+        </div>
       </div>
 
       {selectedBus && (
