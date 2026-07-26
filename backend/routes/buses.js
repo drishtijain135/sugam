@@ -25,13 +25,13 @@ router.get("/", async (req, res) => {
 
 router.post("/", auth, async (req, res) => {
   try {
-    const { name, number_plate } = req.body;
+    const { name, number_plate, route_id } = req.body;
 
     const result = await pool.query(
-      `INSERT INTO buses (name, number_plate)
-       VALUES ($1, $2)
+      `INSERT INTO buses (name, number_plate, route_id)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [name, number_plate]
+      [name, number_plate, route_id || null]
     );
 
     res.status(201).json({

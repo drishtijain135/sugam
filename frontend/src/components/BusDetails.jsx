@@ -1,8 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LuX, LuNavigation } from "react-icons/lu";
 import { calculateEta } from "../utils/calculateEta";
+import { getRouteStops } from "../services/api";
 
 function BusDetails({ bus, onClose, onViewMap }) {
+  const [routeStops, setRouteStops] = useState([]);
+  const [loadingStops, setLoadingStops] = useState(false);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
@@ -11,17 +15,46 @@ function BusDetails({ bus, onClose, onViewMap }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!bus?.route_id) {
+      setRouteStops([]);
+      return;
+    }
+
+    const fetchStops = async () => {
+      try {
+        setLoadingStops(true);
+
+        const response = await getRouteStops(bus.route_id);
+
+        setRouteStops(response.data.route.stops || []);
+      } catch (error) {
+        console.error("Unable to fetch route stops:", error);
+        setRouteStops([]);
+      } finally {
+        setLoadingStops(false);
+      }
+    };
+
+    fetchStops();
+  }, [bus?.route_id]);
+
   if (!bus) return null;
 
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
 
-  const eta = calculateEta(
-    bus.current_lat,
-    bus.current_lng,
-    28.6677,
-    77.2303
-  );
+  const currentStop = routeStops[0];
+  const nextStop = routeStops[1];
+
+  const eta = nextStop
+    ? calculateEta(
+        bus.current_lat,
+        bus.current_lng,
+        nextStop.latitude,
+        nextStop.longitude
+      )
+    : null;
 
   return (
     <div className="fixed inset-0 z-[9999]">
@@ -123,7 +156,9 @@ function BusDetails({ bus, onClose, onViewMap }) {
             </p>
 
             <p className="text-sm font-medium text-white">
-              Civil Lines
+              {loadingStops
+                ? "Loading..."
+                : currentStop?.name || "Unavailable"}
             </p>
           </div>
 
@@ -133,7 +168,9 @@ function BusDetails({ bus, onClose, onViewMap }) {
             </p>
 
             <p className="text-sm font-medium text-white">
-              Kashmere Gate
+              {loadingStops
+                ? "Loading..."
+                : nextStop?.name || "Unavailable"}
             </p>
           </div>
 

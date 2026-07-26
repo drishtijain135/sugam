@@ -17,6 +17,9 @@ export const searchRoutes = (source, destination) =>
     },
   });
 
+export const getRouteStops = (routeId) =>
+  api.get(`/routes/${routeId}/stops`);
+
 export const predictSeat = (payload) =>
   api.post("/predict/seat", payload);
 
