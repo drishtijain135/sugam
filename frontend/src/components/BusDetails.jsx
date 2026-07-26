@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+import { LuX, LuNavigation } from "react-icons/lu";
 import { calculateEta } from "../utils/calculateEta";
+
 function BusDetails({ bus, onClose, onViewMap }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -8,10 +10,12 @@ function BusDetails({ bus, onClose, onViewMap }) {
       document.body.style.overflow = "";
     };
   }, []);
+
   if (!bus) return null;
-  
+
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
+
   const eta = calculateEta(
     bus.current_lat,
     bus.current_lng,
@@ -21,21 +25,22 @@ function BusDetails({ bus, onClose, onViewMap }) {
 
   return (
     <div className="fixed inset-0 z-[9999]">
-      {/* Dark background overlay */}
+      {/* Background Overlay */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Right-side drawer */}
-      <aside className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto border-l border-slate-700 bg-slate-950 p-4 shadow-2xl sm:p-6">
+      {/* Drawer */}
+      <aside className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto border-l border-slate-800 bg-slate-950 p-5 shadow-2xl sm:p-6">
+        {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm font-semibold text-emerald-400">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-400">
               Live Vehicle
             </p>
 
-            <h2 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+            <h2 className="mt-1 text-lg font-semibold text-white">
               {bus.name || "Bus"}
             </h2>
 
@@ -47,69 +52,62 @@ function BusDetails({ bus, onClose, onViewMap }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-xl text-slate-300 transition hover:bg-slate-700 hover:text-white"
+            aria-label="Close"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-400 transition hover:bg-slate-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
-            ×
+            <LuX size={18} />
           </button>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
-          <div className="flex items-center gap-3">
-            <span className="h-3 w-3 rounded-full bg-emerald-400" />
+        {/* Live Status */}
+        <div className="mt-6 flex items-center gap-3 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
 
-            <div>
-              <p className="font-semibold text-emerald-400">
-                Live tracking active
-              </p>
+          <div>
+            <p className="text-sm font-semibold text-emerald-400">
+              Live tracking active
+            </p>
 
-              <p className="text-xs text-slate-400">
-                Vehicle location is updating in real time.
-              </p>
-            </div>
+            <p className="text-xs text-slate-400">
+              Vehicle location is updating in real time.
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl bg-slate-900 p-4">
-            <p className="text-xs text-slate-500">
-              Latitude
-            </p>
+        {/* Information Cards */}
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p className="text-xs text-slate-500">Latitude</p>
 
-            <p className="mt-2 font-bold text-white">
+            <p className="mt-2 text-sm font-semibold text-white">
               {Number.isNaN(latitude)
                 ? "Unavailable"
                 : latitude.toFixed(5)}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-900 p-4">
-            <p className="text-xs text-slate-500">
-              Longitude
-            </p>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p className="text-xs text-slate-500">Longitude</p>
 
-            <p className="mt-2 font-bold text-white">
+            <p className="mt-2 text-sm font-semibold text-white">
               {Number.isNaN(longitude)
                 ? "Unavailable"
                 : longitude.toFixed(5)}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-900 p-4">
-            <p className="text-xs text-slate-500">
-              Status
-            </p>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p className="text-xs text-slate-500">Status</p>
 
-            <p className="mt-2 font-bold text-emerald-400">
+            <p className="mt-2 text-sm font-semibold text-emerald-400">
               Active
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-900 p-4">
-            <p className="text-xs text-slate-500">
-              Last updated
-            </p>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p className="text-xs text-slate-500">Last updated</p>
 
-            <p className="mt-2 font-bold text-white">
+            <p className="mt-2 text-sm font-semibold text-white">
               {bus.last_updated
                 ? new Date(bus.last_updated).toLocaleTimeString()
                 : "Live now"}
@@ -117,43 +115,46 @@ function BusDetails({ bus, onClose, onViewMap }) {
           </div>
         </div>
 
+        {/* Journey Details */}
         <div className="mt-6 space-y-3">
-          <div className="rounded-2xl border border-slate-800 p-4">
+          <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
             <p className="text-xs text-slate-500">
               Current stop
             </p>
 
-            <p className="mt-1 font-semibold text-white">
+            <p className="text-sm font-medium text-white">
               Civil Lines
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 p-4">
+          <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
             <p className="text-xs text-slate-500">
               Next stop
             </p>
 
-            <p className="mt-1 font-semibold text-white">
+            <p className="text-sm font-medium text-white">
               Kashmere Gate
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 p-4">
+          <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
             <p className="text-xs text-slate-500">
               Estimated arrival
             </p>
 
-            <p className="mt-1 font-semibold text-white">
+            <p className="text-sm font-medium text-white">
               {eta ? `${eta} minutes` : "Unavailable"}
             </p>
           </div>
         </div>
 
+        {/* View Map Button */}
         <button
           type="button"
           onClick={onViewMap}
-          className="mt-6 w-full rounded-2xl bg-emerald-400 px-4 py-3 font-bold text-slate-950 transition hover:bg-emerald-300"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 font-semibold text-slate-950 transition duration-200 hover:bg-emerald-300 active:scale-[0.98]"
         >
+          <LuNavigation size={18} />
           View on map
         </button>
       </aside>

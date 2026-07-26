@@ -1,14 +1,23 @@
+import { FiCheckCircle } from "react-icons/fi";
+import {
+  LuBus,
+  LuTrainFront,
+  LuCar,
+  LuFootprints,
+  LuArrowRight,
+} from "react-icons/lu";
+
 const modeIcons = {
-  bus: "🚌",
-  metro: "🚇",
-  auto: "🛺",
-  walk: "🚶",
+  bus: LuBus,
+  metro: LuTrainFront,
+  auto: LuCar,
+  walk: LuFootprints,
 };
 
 function getModeIcon(mode) {
   const normalizedMode = mode.trim().toLowerCase();
 
-  return modeIcons[normalizedMode] || "➡️";
+  return modeIcons[normalizedMode] || LuArrowRight;
 }
 
 function RouteCard({
@@ -33,78 +42,80 @@ function RouteCard({
   return (
     <article
       onClick={() => setSelectedRoute(route)}
-      className={`cursor-pointer rounded-2xl border p-4 transition duration-200 ${
+      className={`cursor-pointer rounded-lg border-l-2 border border-slate-800 bg-surface-raised p-4 transition ${
         isSelected
-          ? "border-emerald-400 bg-slate-800 shadow-lg shadow-emerald-400/10"
-          : "border-slate-700 bg-slate-800/70 hover:border-slate-500 hover:bg-slate-800"
+          ? "border-l-emerald-400 bg-slate-800/60"
+          : "border-l-transparent hover:border-l-slate-600 hover:bg-slate-800/30"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
             Route option
           </p>
 
-          <h3 className="mt-1 text-base font-bold text-white">
+          <h3 className="mt-0.5 text-sm font-semibold text-white">
             {route.route_title}
           </h3>
         </div>
 
-        <span className="rounded-full bg-emerald-400 px-3 py-1 text-[11px] font-bold uppercase text-slate-950">
+        <span className="shrink-0 rounded-md bg-emerald-400/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
           {route.recommendation}
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        {modes.map((mode, index) => (
-          <div
-            key={`${mode}-${index}`}
-            className="flex items-center gap-2"
-          >
-            <div className="flex items-center gap-2 rounded-xl bg-slate-950 px-3 py-2">
-              <span className="text-lg">
-                {getModeIcon(mode)}
-              </span>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        {modes.map((mode, index) => {
+          const ModeIcon = getModeIcon(mode);
 
-              <span className="text-sm font-medium text-slate-200">
-                {mode}
-              </span>
+          return (
+            <div
+              key={`${mode}-${index}`}
+              className="flex items-center gap-1.5"
+            >
+              <div className="flex items-center gap-1.5 rounded-md bg-surface-sunken px-2 py-1">
+                <ModeIcon size={13} className="text-slate-400" />
+
+                <span className="text-xs font-medium text-slate-300">
+                  {mode}
+                </span>
+              </div>
+
+              {index < modes.length - 1 && (
+                <LuArrowRight size={11} className="text-slate-700" />
+              )}
             </div>
-
-            {index < modes.length - 1 && (
-              <span className="text-slate-600">→</span>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-[11px] text-slate-500">
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="rounded-md bg-surface-sunken px-2.5 py-2">
+          <p className="text-[10px] text-slate-500">
             Duration
           </p>
 
-          <p className="mt-1 font-bold text-white">
+          <p className="mt-0.5 text-sm font-semibold text-white">
             {route.estimated_time} min
           </p>
         </div>
 
-        <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-[11px] text-slate-500">
+        <div className="rounded-md bg-surface-sunken px-2.5 py-2">
+          <p className="text-[10px] text-slate-500">
             Fare
           </p>
 
-          <p className="mt-1 font-bold text-white">
+          <p className="mt-0.5 text-sm font-semibold text-white">
             ₹{route.estimated_cost}
           </p>
         </div>
 
-        <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-[11px] text-slate-500">
+        <div className="rounded-md bg-surface-sunken px-2.5 py-2">
+          <p className="text-[10px] text-slate-500">
             Comfort
           </p>
 
-          <p className="mt-1 font-bold text-white">
+          <p className="mt-0.5 text-sm font-semibold text-white">
             {route.comfort_score}%
           </p>
         </div>
@@ -118,41 +129,35 @@ function RouteCard({
             onPredictSeat(route);
           }}
           disabled={loading}
-          className="mt-4 w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-slate-950 transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-3 w-full rounded-md border border-amber-400/30 bg-amber-400/10 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/15 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading
             ? "Predicting..."
-            : "Predict Seat Availability"}
+            : "Predict seat availability"}
         </button>
       )}
 
       {prediction && (
-        <div className="mt-3 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-300">
-              Seat chance
-            </span>
-
-            <span className="font-bold text-emerald-400">
-              {prediction.seatChance}%
-            </span>
-          </div>
-
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-sm text-slate-300">
-              Crowd level
-            </span>
-
-            <span className="font-bold text-white">
-              {prediction.crowdLevel}
+        <div className="mt-2.5 flex items-center justify-between rounded-md border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs">
+          <div className="flex items-center gap-3">
+            <span className="text-slate-400">
+              Seat chance{" "}
+              <strong className="font-semibold text-emerald-400">
+                {prediction.seatChance}%
+              </strong>
             </span>
           </div>
+
+          <span className="font-medium text-slate-300">
+            {prediction.crowdLevel}
+          </span>
         </div>
       )}
 
       {isSelected && (
-        <p className="mt-3 text-xs font-semibold text-emerald-400">
-          ✓ Selected route
+        <p className="mt-2.5 flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+          <FiCheckCircle size={12} />
+          Selected route
         </p>
       )}
     </article>

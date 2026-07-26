@@ -16,23 +16,27 @@ const busIcon = L.divIcon({
   className: "custom-bus-marker",
   html: `
     <div style="
-      width: 42px;
-      height: 42px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #34d399;
-      border: 4px solid white;
-      border-radius: 50%;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-      font-size: 21px;
+      background: #10b981;
+      border: 2px solid #022c22;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
     ">
-      🚌
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#022c22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/>
+        <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.9 6.8 19.9 6 18.8 6H3.7c-.6 0-1.2.3-1.6.8L1 8.6"/>
+        <path d="M2 12v5c0 .6.4 1 1 1h2"/>
+        <circle cx="7" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+      </svg>
     </div>
   `,
-  iconSize: [42, 42],
-  iconAnchor: [21, 21],
-  popupAnchor: [0, -24],
+  iconSize: [30, 30],
+  iconAnchor: [15, 15],
+  popupAnchor: [0, -18],
 });
 
 function AnimatedBusMarker({ bus }) {
@@ -101,26 +105,25 @@ function AnimatedBusMarker({ bus }) {
       icon={busIcon}
     >
       <Popup>
-        <div className="min-w-[180px]">
-          <p className="text-base font-bold text-slate-900">
-            🚌 {bus.name}
-          </p>
+        <div className="min-w-[170px]">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-slate-900">
+              {bus.name}
+            </p>
 
-          <p className="mt-1 text-sm text-slate-600">
-            Number plate: {bus.number_plate}
-          </p>
-
-          <div className="mt-3 flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-
-            <span className="text-sm font-semibold text-emerald-600">
+            <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               Live
             </span>
           </div>
 
+          <p className="mt-1 text-xs text-slate-500">
+            {bus.number_plate}
+          </p>
+
           {bus.last_updated && (
-            <p className="mt-2 text-xs text-slate-500">
-              Updated:{" "}
+            <p className="mt-2 border-t border-slate-200 pt-2 text-[11px] text-slate-400">
+              Updated{" "}
               {new Date(
                 bus.last_updated
               ).toLocaleTimeString()}
@@ -213,8 +216,9 @@ function BusMap({ buses, selectedRoute, focusedBus }) {
         <Polyline
           positions={selectedCoordinates}
           pathOptions={{
-            weight: 7,
-            opacity: 0.9,
+            color: "#10b981",
+            weight: 4,
+            opacity: 0.85,
             lineCap: "round",
             lineJoin: "round",
           }}

@@ -1,4 +1,6 @@
+import { LuBus, LuMapPin } from "react-icons/lu";
 import { calculateEta } from "../utils/calculateEta";
+
 function LiveBusCard({ bus, onClick }) {
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
@@ -9,72 +11,64 @@ function LiveBusCard({ bus, onClick }) {
     77.2303
   );
 
+  const hasCoordinates =
+    !Number.isNaN(latitude) && !Number.isNaN(longitude);
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="min-w-[230px] rounded-2xl border border-slate-800 bg-slate-950 p-4 text-left transition hover:-translate-y-1 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-400/10"
+      className="min-w-[240px] shrink-0 rounded-lg border border-slate-800 bg-surface-raised p-3.5 text-left transition hover:border-emerald-400/40 hover:bg-slate-800/40"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-400 text-xl">
-            🚌
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-emerald-400/10 text-emerald-400">
+            <LuBus size={16} />
           </div>
 
-          <div>
-            <h3 className="font-bold text-white">
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-semibold text-white">
               {bus.name}
             </h3>
 
-            <p className="text-xs text-slate-500">
+            <p className="truncate text-xs text-slate-500">
               {bus.number_plate}
             </p>
           </div>
         </div>
 
-        <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold text-emerald-400">
+        <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-400/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
           Live
         </span>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-slate-900 p-3">
-          <p className="text-[11px] text-slate-500">
-            Latitude
-          </p>
-
-          <p className="mt-1 text-sm font-semibold text-white">
-            {Number.isNaN(latitude)
-              ? "Unavailable"
-              : latitude.toFixed(4)}
-          </p>
+      <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-2.5">
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <LuMapPin size={12} />
+          <span>
+            {hasCoordinates
+              ? `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`
+              : "Location unavailable"}
+          </span>
         </div>
 
-        <div className="rounded-xl bg-slate-900 p-3">
-          <p className="text-[11px] text-slate-500">
-            Longitude
+        <div className="text-right">
+          <p className="text-[10px] uppercase tracking-wide text-slate-500">
+            ETA
           </p>
-
-          <p className="mt-1 text-sm font-semibold text-white">
-            {Number.isNaN(longitude)
-              ? "Unavailable"
-              : longitude.toFixed(4)}
+          <p className="text-sm font-semibold text-emerald-400">
+            {eta ? `${eta} min` : "—"}
           </p>
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs">
-        <span className="text-slate-500">
-          Last updated:{" "}
-          {bus.last_updated
-            ? new Date(bus.last_updated).toLocaleTimeString()
-            : "Live tracking active"}
-        </span>
-
-        <span className="font-semibold text-emerald-400">
-          ETA: {eta ? `${eta} min` : "Unavailable"}
-        </span>
-      </div>
+      <p className="mt-2 text-[11px] text-slate-600">
+        Updated{" "}
+        {bus.last_updated
+          ? new Date(bus.last_updated).toLocaleTimeString()
+          : "live tracking active"}
+      </p>
     </button>
   );
 }

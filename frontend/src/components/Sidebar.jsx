@@ -1,3 +1,4 @@
+import { LuBusFront } from "react-icons/lu";
 import SearchForm from "./SearchForm";
 import RouteCard from "./RouteCard";
 
@@ -17,15 +18,21 @@ function Sidebar({
   setSelectedRoute,
 }) {
   return (
-    <aside className="h-screen w-full overflow-y-auto bg-slate-950 p-4 md:w-[420px] md:p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">
-          🚍 SUGAM
-        </h1>
+    <aside className="h-screen w-full overflow-y-auto border-r border-slate-800 bg-surface-panel p-4 md:w-[380px] md:p-5">
+      <div className="mb-5 flex items-center gap-2.5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-emerald-400 text-slate-950">
+          <LuBusFront size={18} />
+        </div>
 
-        <p className="mt-1 text-sm text-slate-400">
-          Unified public transport planner
-        </p>
+        <div>
+          <h1 className="text-lg font-semibold text-white">
+            SUGAM
+          </h1>
+
+          <p className="text-xs text-slate-500">
+            Unified public transport planner
+          </p>
+        </div>
       </div>
 
       <SearchForm
@@ -38,8 +45,8 @@ function Sidebar({
       />
 
       <div className="mt-5">
-        <h2 className="mb-3 text-lg font-semibold">
-          Route Options
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+          Route options
         </h2>
 
         {searchingRoutes ? (
@@ -55,7 +62,7 @@ function Sidebar({
             Search IGDTUW to Rajouri Garden to view route options.
           </p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {routes.map((route) => (
               <RouteCard
                 key={route.id}

@@ -10,10 +10,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(16,185,129,0.12), transparent 32%),
-    radial-gradient(circle at 90% 85%, rgba(59,130,246,0.12), transparent 35%),
-    linear-gradient(135deg,#020617 0%,#07111f 50%,#020617 100%);
+  background: #020617;
   color: #f8fafc;
 }
 
@@ -21,9 +18,7 @@ body {
   min-height: 100vh;
 }
 
+/* Flat page shell — no decorative gradients or blur blobs */
 .sugam-grid-background {
-  background-image:
-    linear-gradient(rgba(148,163,184,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148,163,184,.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: #020617;
 }
