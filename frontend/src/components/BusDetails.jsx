@@ -3,6 +3,24 @@ import { LuX, LuNavigation } from "react-icons/lu";
 import { calculateEta } from "../utils/calculateEta";
 import { getRouteStops } from "../services/api";
 
+function getDistance(lat1, lng1, lat2, lng2) {
+  const toRadians = (value) => (value * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+
+  const latitudeDifference = toRadians(lat2 - lat1);
+  const longitudeDifference = toRadians(lng2 - lng1);
+
+  const a =
+    Math.sin(latitudeDifference / 2) ** 2 +
+    Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(longitudeDifference / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return earthRadiusKm * c;
+}
+
 function BusDetails({ bus, onClose, onViewMap }) {
   const [routeStops, setRouteStops] = useState([]);
   const [loadingStops, setLoadingStops] = useState(false);
@@ -44,17 +62,43 @@ function BusDetails({ bus, onClose, onViewMap }) {
   const latitude = Number(bus.current_lat);
   const longitude = Number(bus.current_lng);
 
-  const currentStop = routeStops[0];
-  const nextStop = routeStops[1];
+  let currentStop = null;
+  let nextStop = null;
+
+  if (
+    routeStops.length > 0 &&
+    !Number.isNaN(latitude) &&
+    !Number.isNaN(longitude)
+  ) {
+    let nearestStopIndex = 0;
+    let shortestDistance = Infinity;
+
+    routeStops.forEach((stop, index) => {
+      const distance = getDistance(
+        latitude,
+        longitude,
+        Number(stop.latitude),
+        Number(stop.longitude)
+      );
+
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearestStopIndex = index;
+      }
+    });
+
+    currentStop = routeStops[nearestStopIndex];
+    nextStop = routeStops[nearestStopIndex + 1] || null;
+  }
 
   const eta = nextStop
-    ? calculateEta(
-        bus.current_lat,
-        bus.current_lng,
-        nextStop.latitude,
-        nextStop.longitude
-      )
-    : null;
+  ? calculateEta(
+      latitude,
+      longitude,
+      Number(nextStop.latitude),
+      Number(nextStop.longitude)
+    )
+  : null;
 
   return (
     <div className="fixed inset-0 z-[9999]">
@@ -170,7 +214,7 @@ function BusDetails({ bus, onClose, onViewMap }) {
             <p className="text-sm font-medium text-white">
               {loadingStops
                 ? "Loading..."
-                : nextStop?.name || "Unavailable"}
+                : nextStop?.name || "Route completed"}
             </p>
           </div>
 
@@ -180,7 +224,11 @@ function BusDetails({ bus, onClose, onViewMap }) {
             </p>
 
             <p className="text-sm font-medium text-white">
-              {eta ? `${eta} minutes` : "Unavailable"}
+              {loadingStops
+                ? "Loading..."
+                : nextStop
+                ? `${eta} minutes`
+                : "Arrived"}
             </p>
           </div>
         </div>
