@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { LuX, LuNavigation } from "react-icons/lu";
 import { calculateEta } from "../utils/calculateEta";
-import { getRouteStops } from "../services/api";
 
 function getDistance(lat1, lng1, lat2, lng2) {
   const toRadians = (value) => (value * Math.PI) / 180;
   const earthRadiusKm = 6371;
 
-  const latitudeDifference = toRadians(lat2 - lat1);
+  const latitudeDifference = toRadians(lat2 - lat1)
   const longitudeDifference = toRadians(lng2 - lng1);
 
   const a =
@@ -34,28 +33,12 @@ function BusDetails({ bus, onClose, onViewMap }) {
   }, []);
 
   useEffect(() => {
-    if (!bus?.route_id) {
+    if (bus?.stops) {
+      setRouteStops(bus.stops);
+    } else {
       setRouteStops([]);
-      return;
     }
-
-    const fetchStops = async () => {
-      try {
-        setLoadingStops(true);
-
-        const response = await getRouteStops(bus.route_id);
-
-        setRouteStops(response.data.route.stops || []);
-      } catch (error) {
-        console.error("Unable to fetch route stops:", error);
-        setRouteStops([]);
-      } finally {
-        setLoadingStops(false);
-      }
-    };
-
-    fetchStops();
-  }, [bus?.route_id]);
+  }, [bus]);
 
   if (!bus) return null;
 
@@ -192,6 +175,73 @@ function BusDetails({ bus, onClose, onViewMap }) {
           </div>
         </div>
 
+        {/* Route Information */}
+        <div className="mt-6">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-emerald-400">
+            Route Information
+          </h3>
+
+          <div className="space-y-3">
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Organization</span>
+              <span className="text-sm text-white">
+                {bus.organization_name}
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Route Number</span>
+              <span className="text-sm text-white">
+                {bus.route_number}
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Route Name</span>
+              <span className="text-sm text-white">
+                {bus.route_name}
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Source</span>
+              <span className="text-sm text-white">
+                {bus.source}
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Destination</span>
+              <span className="text-sm text-white">
+                {bus.destination}
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Distance</span>
+              <span className="text-sm text-white">
+                {bus.distance_km} km
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Fare</span>
+              <span className="text-sm text-white">
+                ₹{bus.base_fare}
+              </span>
+            </div>
+
+            <div className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="text-xs text-slate-500">Estimated Time</span>
+              <span className="text-sm text-white">
+                {bus.estimated_time} min
+              </span>
+            </div>
+
+          </div>
+        </div>
+
         {/* Journey Details */}
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-4 py-3">
@@ -202,7 +252,7 @@ function BusDetails({ bus, onClose, onViewMap }) {
             <p className="text-sm font-medium text-white">
               {loadingStops
                 ? "Loading..."
-                : currentStop?.name || "Unavailable"}
+                : currentStop?.stop_name || "Unavailable"}
             </p>
           </div>
 
@@ -214,7 +264,7 @@ function BusDetails({ bus, onClose, onViewMap }) {
             <p className="text-sm font-medium text-white">
               {loadingStops
                 ? "Loading..."
-                : nextStop?.name || "Route completed"}
+                : nextStop?.stop_name || "Route completed"}
             </p>
           </div>
 
@@ -230,6 +280,42 @@ function BusDetails({ bus, onClose, onViewMap }) {
                 ? `${eta} minutes`
                 : "Arrived"}
             </p>
+          </div>
+        </div>
+
+        {/* Route Stops */}
+        <div className="mt-6">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-emerald-400">
+            Route Stops
+          </h3>
+
+          <div className="space-y-2">
+
+            {loadingStops ? (
+              <p className="text-sm text-slate-400">
+                Loading stops...
+              </p>
+            ) : (
+              routeStops.map((stop) => (
+                <div
+                  key={stop.stop_order}
+                  className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3"
+                >
+                  <div className="flex justify-between">
+
+                    <span className="font-medium text-white">
+                      {stop.stop_order}. {stop.stop_name}
+                    </span>
+
+                    <span className="text-sm text-emerald-400">
+                      {stop.estimated_minutes_from_start} min
+                    </span>
+
+                  </div>
+                </div>
+              ))
+            )}
+
           </div>
         </div>
 

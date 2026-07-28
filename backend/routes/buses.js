@@ -17,6 +17,8 @@ router.get("/", async (req, res) => {
           b.current_lng,
           b.last_updated,
           b.is_active,
+          b.route_id,
+          b.service_route_id,
 
           o.organization_name,
 
@@ -60,6 +62,8 @@ router.get("/", async (req, res) => {
 
       GROUP BY
           b.id,
+          b.route_id,
+          b.service_route_id,
           o.organization_name,
           sr.route_number,
           sr.route_name,
