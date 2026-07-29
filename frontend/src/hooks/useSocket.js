@@ -6,16 +6,18 @@ const SOCKET_URL =
 
 const socket = io(SOCKET_URL);
 
-function useSocket(onLocationUpdate) {
+function useSocket(busId, onLocationUpdate) {
   useEffect(() => {
-    socket.emit("join-bus-room", 1);
+    if (!busId) return;
+
+    socket.emit("join-bus-room", busId);
 
     socket.on("location-update", onLocationUpdate);
 
     return () => {
       socket.off("location-update", onLocationUpdate);
     };
-  }, [onLocationUpdate]);
+  }, [busId, onLocationUpdate]);
 
   return socket;
 }

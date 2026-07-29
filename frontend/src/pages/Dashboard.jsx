@@ -64,13 +64,25 @@ function Dashboard() {
               ...bus,
               current_lat: data.lat,
               current_lng: data.lng,
+              last_updated: data.updatedAt,
             }
           : bus
       )
     );
+
+    setSelectedBus((previousBus) =>
+      previousBus && previousBus.id === data.busId
+        ? {
+            ...previousBus,
+            current_lat: data.lat,
+            current_lng: data.lng,
+            last_updated: data.updatedAt,
+          }
+        : previousBus
+    );
   }, []);
 
-  useSocket(handleLocationUpdate);
+  useSocket(selectedBus?.id, handleLocationUpdate);
 
   const handleSearch = async () => {
     try {

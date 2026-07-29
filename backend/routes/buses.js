@@ -276,6 +276,15 @@ router.put(
         });
       }
 
+      const io = req.app.get("io");
+      io.to(`bus_${id}`).emit("location-update", {
+        success: true,
+        busId: result.rows[0].id,
+        lat: result.rows[0].current_lat,
+        lng: result.rows[0].current_lng,
+        updatedAt: result.rows[0].last_updated
+      });
+
       return res.json({
         success: true,
         message: "Bus location updated",
