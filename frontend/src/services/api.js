@@ -23,4 +23,13 @@ export const getRouteStops = (routeId) =>
 export const predictSeat = (payload) =>
   api.post("/predict/seat", payload);
 
+export const register = (data) =>
+  api.post("/auth/register", data);
+
+export const login = (data) =>
+  api.post("/auth/login", data);
+
+export const registerAuthority = (data) =>
+  api.post("/auth/register-organization", data);
+
 export default api;
