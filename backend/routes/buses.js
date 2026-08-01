@@ -301,4 +301,135 @@ router.put(
   }
 );
 
+router.put(
+  "/:id",
+  auth,
+  authorize("AUTHORITY"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, number_plate, route_id } = req.body;
+
+      const organizationResult = await pool.query(
+        `
+        SELECT id
+        FROM organizations
+        WHERE user_id = $1
+        `,
+        [req.user.id]
+      );
+
+      if (organizationResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Organization profile not found",
+        });
+      }
+
+      const organizationId = organizationResult.rows[0].id;
+
+      const result = await pool.query(
+        `
+        UPDATE buses
+        SET
+          name = $1,
+          number_plate = $2,
+          route_id = $3
+        WHERE
+          id = $4
+          AND organization_id = $5
+        RETURNING *;
+        `,
+        [
+          name,
+          number_plate,
+          route_id || null,
+          id,
+          organizationId,
+        ]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Bus not found",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Bus updated successfully",
+        bus: result.rows[0],
+      });
+
+    } catch (error) {
+      console.error("Update bus error:", error);
+
+      res.status(500).json({
+        success: false,
+        message: "Server Error",
+      });
+    }
+  }
+);
+
+router.delete(
+  "/:id",
+  auth,
+  authorize("AUTHORITY"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const organizationResult = await pool.query(
+        `
+        SELECT id
+        FROM organizations
+        WHERE user_id = $1
+        `,
+        [req.user.id]
+      );
+
+      if (organizationResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Organization not found",
+        });
+      }
+
+      const organizationId = organizationResult.rows[0].id;
+
+      const result = await pool.query(
+        `
+        DELETE FROM buses
+        WHERE id = $1
+        AND organization_id = $2
+        RETURNING *;
+        `,
+        [id, organizationId]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Bus not found",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Bus deleted successfully",
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message: "Server Error",
+      });
+    }
+  }
+);
+
 module.exports = router;

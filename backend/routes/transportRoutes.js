@@ -3,6 +3,34 @@ const pool = require("../config/db");
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        id,
+        route_number,
+        route_name,
+        source,
+        destination
+      FROM service_routes
+      ORDER BY route_number;
+    `);
+
+    res.json({
+      success: true,
+      routes: result.rows,
+    });
+
+  } catch (error) {
+    console.error("Fetch routes error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+});
+
 router.get("/search", async (req, res) => {
   try {
     const { source, destination } = req.query;
